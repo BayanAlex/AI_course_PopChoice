@@ -1,0 +1,65 @@
+<div class="d-flex flex-column align-items-center justify-content-center bg-primary-subtle">
+  <img src="popcorn.svg" alt="" />
+  <h2>{{ pollStep() }}</h2>
+
+  <form
+    [formGroup]="form"
+    class="d-flex flex-column justify-content-center gap-4 mt-4 w-100"
+    [class.was-validated]="formValidated()"
+    (ngSubmit)="onSubmit()"
+    novalidate
+  >
+    <div>
+      <h4>What’s your favorite movie and why?</h4>
+      <textarea
+        class="form-control"
+        name="favoriteMovie"
+        formControlName="favoriteMovie"
+        class="form-control form-control-lg"
+        aria-label="Favorite movie input"
+        required
+      ></textarea>
+    </div>
+
+    @for (question of questionsWithOptions | keyvalue; track question) {
+      <div>
+        <h4>{{ question.value.caption }}</h4>
+        <div
+          class="d-flex flex-wrap gap-2 p-1"
+          formGroupName="{{ question.key }}"
+          [class.validation-error]="form.get(question.key)?.invalid && formValidated()"
+        >
+          @for (option of question.value.options; track option; let index = $index) {
+            <input
+              class="btn-check"
+              type="checkbox"
+              [value]="option"
+              [formControlName]="option.toLowerCase()"
+              id="{{ question.key }}Option{{ $index }}"
+              name="{{ question.key }}Option{{ $index }}"
+            />
+            <label class="btn btn-primary option-label" for="{{ question.key }}Option{{ $index }}">
+              {{ option }}
+            </label>
+          }
+        </div>
+      </div>
+    }
+
+    <div>
+      <h4>Which famous film person would you love to be stranded on an island with and why?</h4>
+      <textarea
+        class="form-control"
+        name="favoritePerson"
+        formControlName="favoritePerson"
+        class="form-control form-control-lg"
+        aria-label="Favorite person input"
+        required
+      ></textarea>
+    </div>
+
+    <button type="submit" class="btn btn-primary btn-lg mt-4">
+      {{ submitCaption() }}
+    </button>
+  </form>
+</div>

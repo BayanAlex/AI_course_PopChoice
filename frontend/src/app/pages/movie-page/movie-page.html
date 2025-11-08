@@ -1,0 +1,24 @@
+<div class="d-flex flex-column align-items-center justify-content-center gap-2 bg-primary-subtle">
+  @if (isLoading()) {
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Loading recommendation...</span>
+    </div>
+  } @else if (recommendation()) {
+    <h3 class="fw-bold">{{ recommendation()!.title }} ({{ recommendation()!.releaseYear }})</h3>
+    <div class="w-100">
+      <img
+        [src]="recommendation()!.posterUrl"
+        [alt]="recommendation()!.title + ' Movie Poster'"
+        class="w-100 h-auto rounded"
+      />
+    </div>
+    <p>{{ recommendation()!.description }}</p>
+    <button class="btn btn-primary btn-lg w-100" (click)="nextMovie()">Next Movie</button>
+  } @else {
+    <div class="alert alert-warning" role="alert">
+      <h4>No recommendation available</h4>
+      <p>Unable to load movie recommendation. Please try again.</p>
+      <button class="btn btn-primary" (click)="loadRecommendation()">Retry</button>
+    </div>
+  }
+</div>

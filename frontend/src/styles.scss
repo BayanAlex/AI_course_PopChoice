@@ -1,0 +1,120 @@
+@use 'sass:color';
+@import './reset.scss';
+@import 'bootstrap/scss/bootstrap';
+@import './variables.scss';
+@import url('https://fonts.googleapis.com/css2?family=Carter+One&family=Roboto+Slab:wght@100..900&display=swap');
+
+body {
+  background-color: var(--bs-primary-bg-subtle);
+}
+
+h1 {
+  font-family: 'Carter One';
+  font-size: 45px;
+  font-weight: 400;
+}
+
+h2,
+h3,
+h4,
+p {
+  font-family: 'Roboto Slab';
+  font-weight: 400;
+}
+
+h2 {
+  font-size: 50px;
+  line-height: 1.2;
+}
+
+h3 {
+  font-size: 30px;
+}
+
+h4 {
+  font-size: 16px;
+  margin-bottom: 10px;
+  line-height: 1.5;
+}
+
+p {
+  font-size: 18px;
+  line-height: 1.6;
+}
+
+.container {
+  max-width: 540px;
+  padding: 34px;
+  height: 100%;
+}
+
+form {
+  &:not(.was-validated) {
+    .form-control,
+    .form-select {
+      border-color: var(--bs-primary-bg-subtle) !important;
+    }
+  }
+
+  .form-control,
+  .form-select {
+    background-color: $input-bg-color !important;
+    font-size: 18px;
+    font-weight: 300;
+  }
+
+  .form-select-lg,
+  .form-control-lg {
+    padding-bottom: 1rem;
+    padding-top: 1rem;
+  }
+
+  .form-select {
+    padding-left: 36px;
+  }
+}
+
+.select-placeholder,
+.form-control::placeholder {
+  color: var(--bs-primary-bg-subtle) !important;
+}
+
+.btn {
+  color: var(--bs-primary-bg-subtle) !important;
+  background-color: $button-bg-color;
+  font-size: 30px;
+  font-weight: 700;
+  line-height: 1.7;
+  border-color: unset !important;
+
+  &:active {
+    background-color: color.adjust($button-bg-color, $lightness: -30%) !important;
+  }
+}
+
+.btn-check {
+  &:checked + .option-label {
+    background-color: $button-bg-color !important;
+    color: var(--bs-primary-bg-subtle) !important;
+  }
+}
+
+.btn:hover:not(.option-label),
+.btn-check:checked + .option-label:hover {
+  background-color: color.adjust($button-bg-color, $lightness: -20%) !important;
+}
+
+.option-label {
+  font-family: 'Roboto Slab';
+  font-size: 14px;
+  font-weight: 400;
+  padding: 4px 16px;
+  background-color: #3b4877 !important;
+  color: #ffffff !important;
+  border: none;
+  transition: opacity 0.3s ease;
+
+  &:hover {
+    opacity: 0.7;
+  }
+}

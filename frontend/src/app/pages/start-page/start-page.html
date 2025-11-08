@@ -1,0 +1,39 @@
+<div class="d-flex flex-column align-items-center justify-content-center bg-primary-subtle">
+  <img src="popcorn.svg" alt="" />
+  <h1>PopChoice</h1>
+  <form
+    [formGroup]="form"
+    class="d-flex flex-column justify-content-center gap-4 mt-4 w-100"
+    [class.was-validated]="formValidated()"
+    (ngSubmit)="onSubmit()"
+    novalidate
+  >
+    <select
+      name="peopleCount"
+      formControlName="peopleCount"
+      #peopleCountSelect
+      class="form-select form-select-lg text-center"
+      aria-label="People count selection"
+      [class.select-placeholder]="peopleCountSelect.selectedIndex === 0"
+      required
+    >
+      @for (option of peopleCountOptions; track option; let index = $index) {
+        @if (index === 0) {
+          <option value="" disabled selected>{{ option }}</option>
+        } @else {
+          <option [value]="option">{{ option }}</option>
+        }
+      }
+    </select>
+    <input
+      type="text"
+      name="timeAvailable"
+      formControlName="timeAvailable"
+      class="form-control form-control-lg text-center"
+      placeholder="How much time do you have?"
+      aria-label="Time available input"
+      required
+    />
+    <button type="submit" class="btn btn-primary btn-lg">Start</button>
+  </form>
+</div>

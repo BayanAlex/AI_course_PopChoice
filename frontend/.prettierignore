@@ -1,0 +1,56 @@
+# Dependencies
+node_modules
+node_modules/**
+
+# Build outputs
+dist
+dist/**
+.angular
+.angular/**
+coverage
+coverage/**
+tmp
+out-tsc
+
+# Generated files
+*.map
+*.d.ts
+
+# Package manager files
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Environment files
+.env
+.env.*
+
+# IDE
+.vscode
+.vscode/**
+.idea
+.idea/**
+
+# System
+.DS_Store
+**/.DS_Store
+Thumbs.db
+
+# Angular specific
+browserslist
+karma.conf.js
+.editorconfig
+
+# Testing
+e2e
+e2e/**
+
+# Documentation
+*.md
+CHANGELOG.md
+LICENSE
+
+# Archives
+*.zip
+*.tar.gz
+src.zip
