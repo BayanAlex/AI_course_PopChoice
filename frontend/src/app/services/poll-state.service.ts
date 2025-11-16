@@ -17,9 +17,7 @@ export class PollStateService {
   readonly timeAvailable: Signal<string> = this._timeAvailable.asReadonly();
 
   readonly isPollCompleted = computed(() => this._pollData().length === this._peopleCount());
-
   readonly currentPollStepData = computed(() => this._pollData()[this._currentPollStep() - 1]);
-
   readonly allPollData = computed(() => this._pollData());
 
   setPeopleCount(count: number): void {
