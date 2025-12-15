@@ -8,7 +8,7 @@ import {
 } from '@angular/forms';
 import { Router } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { MAX_PEOPLE_COUNT } from '../../app.constants';
+import { MAX_PEOPLE_COUNT, QUESTIONS } from '../../app.constants';
 import { PollStateService } from '../../services/poll-state.service';
 
 const PEOPLE_COUNT_PLACEHOLDER = 'How many people?';
@@ -33,6 +33,7 @@ export class StartPage implements OnInit {
     PEOPLE_COUNT_PLACEHOLDER,
     ...Array.from({ length: MAX_PEOPLE_COUNT }, (_, i) => `${i + 1}`),
   ];
+  readonly timeAvailableQuestion = QUESTIONS.timeAvailable;
 
   private previousPeopleCount = 0;
   private readonly peopleCountValue: Signal<string>;

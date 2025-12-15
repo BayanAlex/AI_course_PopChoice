@@ -1,4 +1,4 @@
-import { Component, computed, effect, OnInit, Signal, signal } from '@angular/core';
+import { Component, computed, effect, OnInit, Signal, signal, untracked } from '@angular/core';
 import {
   FormBuilder,
   FormControl,
@@ -12,7 +12,7 @@ import {
 import { Router } from '@angular/router';
 import { PollStateService } from '../../services/poll-state.service';
 import { MoviePollData } from '../../models/movie-poll-data.model';
-import { MOVIE_OPTIONS } from '../../app.constants';
+import { MOVIE_OPTIONS, QUESTIONS } from '../../app.constants';
 import { KeyValuePipe } from '@angular/common';
 import { toSignal } from '@angular/core/rxjs-interop';
 
@@ -50,16 +50,21 @@ class PollFormBuilder {
   }
 }
 
-const POLL_QUESTIONS_WITH_OPTIONS = {
+interface QuestionWithOptions {
+  caption: string;
+  options: readonly string[];
+}
+
+const POLL_QUESTIONS_WITH_OPTIONS: Record<string, QuestionWithOptions> = {
   freshness: {
-    caption: 'How fresh is your favorite movie?',
+    caption: QUESTIONS.freshness,
     options: MOVIE_OPTIONS.freshness,
   },
   mood: {
-    caption: 'What mood are you in?',
+    caption: QUESTIONS.mood,
     options: MOVIE_OPTIONS.mood,
   },
-} as const;
+};
 
 @Component({
   selector: 'app-poll-page',
@@ -69,15 +74,17 @@ const POLL_QUESTIONS_WITH_OPTIONS = {
 })
 export class PollPage implements OnInit {
   readonly formValidated = signal(false);
-  readonly questionsWithOptions = POLL_QUESTIONS_WITH_OPTIONS;
+  readonly questionsWithOptions: Record<string, QuestionWithOptions> = POLL_QUESTIONS_WITH_OPTIONS;
   readonly form: FormGroup;
   readonly pollStep: Signal<number>;
+  private readonly formChanges: Signal<MoviePollData | undefined>;
 
   readonly submitCaption = computed(() =>
     this.pollStep() === this.pollStateService.peopleCount() ? 'Get Movie' : 'Next Person'
   );
 
-  private readonly formChanges: Signal<MoviePollData | undefined>;
+  readonly favoriteMovieQuestion = QUESTIONS.favoriteMovie;
+  readonly favoritePersonQuestion = QUESTIONS.favoritePerson;
 
   constructor(
     private readonly router: Router,
@@ -91,20 +98,27 @@ export class PollPage implements OnInit {
     effect(() => {
       const changes = this.formChanges();
       if (changes) {
-        this.pollStateService.setCurrentPollStepData(changes as MoviePollData);
+        // Use untracked to read current data without triggering this effect
+        const currentData = untracked(() => this.pollStateService.currentPollStepData());
+        // Only update if data actually changed (simple check)
+        if (JSON.stringify(currentData) !== JSON.stringify(changes)) {
+          this.pollStateService.setCurrentPollStepData(changes as MoviePollData);
+        }
       }
     });
   }
 
   ngOnInit(): void {
+    this.pollStateService.setCurrentPollStep(1);
     this.loadExistingData();
   }
 
-  private loadExistingData(): void {
+  private loadExistingData(): boolean {
     const currentData = this.pollStateService.currentPollStepData();
     if (currentData) {
       this.form.patchValue(currentData, { emitEvent: false });
     }
+    return !!currentData;
   }
 
   onSubmit(): void {
@@ -134,7 +148,9 @@ export class PollPage implements OnInit {
   }
 
   private prepareForNextPerson(): void {
-    this.form.reset();
     this.formValidated.set(false);
+    if (!this.loadExistingData()) {
+      this.form.reset();
+    }
   }
 }

@@ -1,55 +1,32 @@
 import 'jsr:@supabase/functions-js/edge-runtime.d.ts';
-import { createClient, SupabaseClient } from '@supabase/supabase-js';
+import { SupabaseClient } from '@supabase/supabase-js';
 import { RecursiveCharacterTextSplitter } from '@langchain/textsplitters';
-import { SupabaseVectorStore } from '@langchain/community/vectorstores/supabase';
-import { OpenAIEmbeddings } from '@langchain/openai';
 import { CreateDocumentsResult, LoadDataResult } from './interfaces.ts';
 import { CHUNK_OVERLAP, CHUNK_SIZE, FILE_NAME } from './constants.ts';
-import { jsonResponse, validateEnvVars } from '../shared/functions.ts';
-import { EmbeddingsSuccessResponse } from '../shared/interfaces.ts';
+import {
+  initSupabaseAndAI,
+  jsonResponse,
+  handleCors,
+} from '../shared/functions.ts';
+import { EmbeddingsResponse } from './interfaces.ts';
 
 Deno.serve(async (req: Request) => {
-  // Validate request method
-  if (req.method !== 'POST') {
-    return jsonResponse({ error: `Method ${req.method} not allowed` }, 405);
+  const corsResponse = handleCors(req);
+  if (corsResponse) {
+    return corsResponse;
   }
 
-  // Validate environment variables
-  const envValidation = validateEnvVars();
-  if (!envValidation.valid) {
-    console.error('Environment validation failed:', envValidation.error);
-    return jsonResponse({ error: envValidation.error! }, 500);
+  const initResult = initSupabaseAndAI(req);
+  if (initResult.error) {
+    console.error('Initialization failed:', initResult.error);
+    return jsonResponse({ error: initResult.error });
   }
 
-  // Validate authorization
-  const authHeader = req.headers.get('Authorization');
-  if (!authHeader) {
-    return jsonResponse({ error: 'Authorization header required' }, 401);
-  }
-
-  const token = extractBearerToken(authHeader);
-  if (!token) {
-    return jsonResponse({ error: 'Invalid authorization token' }, 401);
-  }
-
-  // Initialize clients
-  const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
-  const supabaseClient = createClient(supabaseUrl, token);
-
-  const embeddingModel = Deno.env.get('OPENAI_EMBEDDING_MODEL')!;
-  const embeddings = new OpenAIEmbeddings({
-    model: embeddingModel,
-  });
-
-  const vectorStore = new SupabaseVectorStore(embeddings, {
-    client: supabaseClient,
-    tableName: 'documents',
-    queryName: 'match_documents',
-  });
+  const { supabaseClient, vectorStore } = initResult;
 
   // Load movies data
   console.log(`Loading movies data from ${FILE_NAME}...`);
-  const moviesDataResult = await loadMoviesData(supabaseClient);
+  const moviesDataResult = await loadMoviesData(supabaseClient!);
   if (!moviesDataResult.success || !moviesDataResult.data) {
     console.error('Failed to load movies data:', moviesDataResult.error);
 
@@ -78,13 +55,12 @@ Deno.serve(async (req: Request) => {
   // Store embeddings
   console.log(`Storing ${documentsResult.documents.length} document chunks...`);
   try {
-    await vectorStore.addDocuments(documentsResult.documents);
+    await vectorStore!.addDocuments(documentsResult.documents);
     console.log('Embeddings created successfully');
 
-    return jsonResponse({
-      status: 'success',
+    return jsonResponse<EmbeddingsResponse>({
       documentsProcessed: documentsResult.documents.length,
-    } as EmbeddingsSuccessResponse);
+    });
   } catch (error) {
     const errorMessage =
       error instanceof Error ? error.message : 'Unknown error';
@@ -98,13 +74,6 @@ Deno.serve(async (req: Request) => {
 });
 
 // Functions
-function extractBearerToken(authHeader: string): string | null {
-  if (!authHeader.startsWith('Bearer ')) {
-    return null;
-  }
-  const token = authHeader.split('Bearer ')[1];
-  return token || null;
-}
 
 async function loadMoviesData(
   supabaseClient: SupabaseClient
@@ -148,13 +117,53 @@ async function createDocuments(
       chunkSize,
       chunkOverlap,
     });
-    const documents = await splitter.createDocuments([text]);
 
-    if (!documents || documents.length === 0) {
+    // Split text into movie blocks (separated by double newlines)
+    const movieBlocks = text.split('\n\n').filter((block) => block.trim());
+    const documentsWithMetadata = [];
+
+    for (const block of movieBlocks) {
+      // Parse Duration, Year and Rating from each movie block
+      const durationMatch = block.match(/Duration:\s*(\d+)h?\s*(\d+)?m?/i);
+      const yearMatch = block.match(/Year:\s*(\d{4})/i);
+      const ratingMatch = block.match(/Rating:\s*([\d.]+)/i);
+
+      let durationMinutes: number | undefined;
+      if (durationMatch) {
+        const hours = parseInt(durationMatch[1]) || 0;
+        const minutes = parseInt(durationMatch[2]) || 0;
+        durationMinutes = hours * 60 + minutes;
+      }
+
+      const releaseYear = yearMatch ? parseInt(yearMatch[1]) : undefined;
+      const rating = ratingMatch ? parseFloat(ratingMatch[1]) : undefined;
+
+      // Create document chunks for this movie with metadata
+      const chunks = await splitter.createDocuments([block]);
+
+      // Add metadata to each chunk
+      for (const chunk of chunks) {
+        documentsWithMetadata.push({
+          ...chunk,
+          metadata: {
+            ...(durationMinutes !== undefined && { durationMinutes }),
+            ...(releaseYear !== undefined && { releaseYear }),
+            ...(rating !== undefined && { rating }),
+          },
+        });
+      }
+    }
+
+    if (!documentsWithMetadata || documentsWithMetadata.length === 0) {
       return { success: false, error: 'No documents created from text' };
     }
 
-    return { success: true, documents };
+    console.log(
+      `Created ${documentsWithMetadata.length} document chunks with metadata`
+    );
+    console.log('Sample metadata:', documentsWithMetadata[0]?.metadata);
+
+    return { success: true, documents: documentsWithMetadata };
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Unknown error';
     return { success: false, error: `Failed to split documents: ${message}` };

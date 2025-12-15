@@ -1,13 +1,11 @@
 import { Injectable, signal, Signal, computed } from '@angular/core';
 import { MoviePollData } from '../models/movie-poll-data.model';
 
-const FIRST_POLL_STEP = 1;
-
 @Injectable({
   providedIn: 'root',
 })
 export class PollStateService {
-  private readonly _currentPollStep = signal(FIRST_POLL_STEP);
+  private readonly _currentPollStep = signal(1);
   private readonly _peopleCount = signal(0);
   private readonly _timeAvailable = signal('');
   private readonly _pollData = signal<MoviePollData[]>([]);
@@ -15,10 +13,10 @@ export class PollStateService {
   readonly currentPollStep: Signal<number> = this._currentPollStep.asReadonly();
   readonly peopleCount: Signal<number> = this._peopleCount.asReadonly();
   readonly timeAvailable: Signal<string> = this._timeAvailable.asReadonly();
+  readonly pollData: Signal<MoviePollData[]> = this._pollData.asReadonly();
 
   readonly isPollCompleted = computed(() => this._pollData().length === this._peopleCount());
   readonly currentPollStepData = computed(() => this._pollData()[this._currentPollStep() - 1]);
-  readonly allPollData = computed(() => this._pollData());
 
   setPeopleCount(count: number): void {
     if (count < 0) {
@@ -48,14 +46,15 @@ export class PollStateService {
     return { finished: false };
   }
 
-  resetPoll(): void {
-    this._currentPollStep.set(FIRST_POLL_STEP);
-    this._pollData.set([]);
+  setCurrentPollStep(step: number): void {
+    if (step < 1 || step > this._peopleCount()) {
+      throw new Error(`Invalid poll step: ${step}`);
+    }
+    this._currentPollStep.set(step);
   }
 
-  resetAll(): void {
-    this.resetPoll();
-    this._peopleCount.set(0);
-    this._timeAvailable.set('');
+  resetPoll(): void {
+    this._currentPollStep.set(1);
+    this._pollData.set([]);
   }
 }

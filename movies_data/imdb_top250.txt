@@ -2241,7 +2241,7 @@ Description: Desperate measures are taken by a man who tries to save his family 
 
 Name: Soorarai Pottru
 Year: 2020
-Duration: N/A
+Duration: 2h 33m
 Rating: 8.6
 Genres: Tamil, Drama
 Cast: Suriya, Aparna Balamurali, Paresh Rawal, Urvashi, Mohan Babu, 'Poo' Ram, Karunas, Krishnakumar Balasubramanian, Vivek Prasanna, Kaali Venkat, Vinodhini Vaidynathan, Prakash Belawadi, Achyuth Kumar, Dan Dhanoa, R.S. Shivaji, Raams, Gnanasambandan Gurunathan, Vishalini

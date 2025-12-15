@@ -3,22 +3,33 @@
     <div class="spinner-border text-primary" role="status">
       <span class="visually-hidden">Loading recommendation...</span>
     </div>
-  } @else if (recommendation()) {
-    <h3 class="fw-bold">{{ recommendation()!.title }} ({{ recommendation()!.releaseYear }})</h3>
-    <div class="w-100">
-      <img
-        [src]="recommendation()!.posterUrl"
-        [alt]="recommendation()!.title + ' Movie Poster'"
-        class="w-100 h-auto rounded"
-      />
-    </div>
-    <p>{{ recommendation()!.description }}</p>
+  } @else if (movie) {
+    <h3 class="fw-bold">{{ movie.title }} ({{ movie.releaseYear }})</h3>
+    @if (movie.poster) {
+      <div class="w-100">
+        <img
+          [src]="movie.poster"
+          [alt]="movie.title + ' Movie Poster'"
+          class="w-100 h-auto rounded"
+        />
+      </div>
+    } @else {
+      <div class="alert alert-warning w-100" role="alert">
+        <h4 class="m-0 text-center">No poster available</h4>
+      </div>
+    }
+    <p>{{ movie.description }}</p>
     <button class="btn btn-primary btn-lg w-100" (click)="nextMovie()">Next Movie</button>
   } @else {
     <div class="alert alert-warning" role="alert">
-      <h4>No recommendation available</h4>
-      <p>Unable to load movie recommendation. Please try again.</p>
-      <button class="btn btn-primary" (click)="loadRecommendation()">Retry</button>
+      <h4>Oooops</h4>
+      <p>{{ error?.error ?? 'Unknown error occurred.' }}</p>
+      <div class="d-flex justify-content-between gap-1">
+        <button class="btn btn-primary" routerLink="/">Go back</button>
+        @if (error?.canRetry) {
+          <button class="btn btn-primary" (click)="loadRecommendation()">Retry</button>
+        }
+      </div>
     </div>
   }
 </div>

@@ -3,6 +3,18 @@
     "lib": ["deno.window"]
   },
   "imports": {
+    "langchain": "npm:langchain@^1.1.0",
+    "@langchain/community": "npm:@langchain/community@^1.0.5",
+    "@langchain/core": "npm:@langchain/core@^1.1.0",
+    "@langchain/openai": "npm:@langchain/openai@^1.1.0",
     "@supabase/supabase-js": "jsr:@supabase/supabase-js@^2"
+  },
+  "fmt": {
+    "useTabs": false,
+    "lineWidth": 100,
+    "indentWidth": 2,
+    "semiColons": true,
+    "singleQuote": true,
+    "proseWrap": "preserve"
   }
 }

@@ -30,9 +30,10 @@
       name="timeAvailable"
       formControlName="timeAvailable"
       class="form-control form-control-lg text-center"
-      placeholder="How much time do you have?"
+      [placeholder]="timeAvailableQuestion"
       aria-label="Time available input"
       required
+      maxlength="20"
     />
     <button type="submit" class="btn btn-primary btn-lg">Start</button>
   </form>

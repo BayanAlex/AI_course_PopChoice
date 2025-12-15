@@ -10,14 +10,14 @@
     novalidate
   >
     <div>
-      <h4>What’s your favorite movie and why?</h4>
+      <h4>{{ favoriteMovieQuestion }}</h4>
       <textarea
-        class="form-control"
+        class="form-control form-control-lg"
         name="favoriteMovie"
         formControlName="favoriteMovie"
-        class="form-control form-control-lg"
         aria-label="Favorite movie input"
         required
+        maxlength="100"
       ></textarea>
     </div>
 
@@ -29,7 +29,7 @@
           formGroupName="{{ question.key }}"
           [class.validation-error]="form.get(question.key)?.invalid && formValidated()"
         >
-          @for (option of question.value.options; track option; let index = $index) {
+          @for (option of $any(question.value.options); track option) {
             <input
               class="btn-check"
               type="checkbox"
@@ -47,14 +47,14 @@
     }
 
     <div>
-      <h4>Which famous film person would you love to be stranded on an island with and why?</h4>
+      <h4>{{ favoritePersonQuestion }}</h4>
       <textarea
-        class="form-control"
+        class="form-control form-control-lg"
         name="favoritePerson"
         formControlName="favoritePerson"
-        class="form-control form-control-lg"
         aria-label="Favorite person input"
         required
+        maxlength="100"
       ></textarea>
     </div>
 

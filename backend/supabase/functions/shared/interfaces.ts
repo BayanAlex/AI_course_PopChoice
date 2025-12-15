@@ -1,11 +1,8 @@
 export interface ErrorResponse {
   error: string;
+  status?: number;
 }
 
-export interface SuccessResponse {
-  status: string;
-}
+export type SuccessResponse = Record<string, any>;
 
-export interface EmbeddingsSuccessResponse extends SuccessResponse {
-  documentsProcessed: number;
-}
+export type ApiResponse = ErrorResponse | SuccessResponse;
