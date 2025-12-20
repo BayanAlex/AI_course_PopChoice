@@ -1,6 +1,7 @@
 @use 'sass:color';
 @import './reset.scss';
 @import 'bootstrap/scss/bootstrap';
+@import 'bootstrap-icons/font/bootstrap-icons.css';
 @import './variables.scss';
 @import url('https://fonts.googleapis.com/css2?family=Carter+One&family=Roboto+Slab:wght@100..900&display=swap');
 
@@ -90,6 +91,12 @@ form {
   &:active {
     background-color: color.adjust($button-bg-color, $lightness: -30%) !important;
   }
+
+  .bi {
+    font-weight: bold;
+    text-shadow: 0 0 1px currentColor, 0 0 1px currentColor;
+    font-size: 2rem;
+  }
 }
 
 .btn-check {
@@ -118,3 +125,4 @@ form {
     opacity: 0.7;
   }
 }
+

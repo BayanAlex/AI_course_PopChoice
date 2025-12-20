@@ -15,6 +15,7 @@ import { MoviePollData } from '../../models/movie-poll-data.model';
 import { MOVIE_OPTIONS, QUESTIONS } from '../../app.constants';
 import { KeyValuePipe } from '@angular/common';
 import { toSignal } from '@angular/core/rxjs-interop';
+import { RouterLink } from '@angular/router';
 
 const atLeastOneSelectedValidator = (): ValidatorFn => {
   return (control: AbstractControl): ValidationErrors | null => {
@@ -68,7 +69,7 @@ const POLL_QUESTIONS_WITH_OPTIONS: Record<string, QuestionWithOptions> = {
 
 @Component({
   selector: 'app-poll-page',
-  imports: [ReactiveFormsModule, KeyValuePipe],
+  imports: [ReactiveFormsModule, KeyValuePipe, RouterLink],
   templateUrl: './poll-page.html',
   styleUrl: './poll-page.scss',
 })

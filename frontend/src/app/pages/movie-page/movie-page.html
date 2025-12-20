@@ -19,15 +19,26 @@
       </div>
     }
     <p>{{ movie.description }}</p>
-    <button class="btn btn-primary btn-lg w-100" (click)="nextMovie()">Next Movie</button>
+
+    <div class="d-flex justify-content-start gap-2 w-100">
+      <button type="button" class="btn btn-primary" routerLink="/poll">
+        <i class="bi bi-arrow-left"></i>
+      </button>
+      <button type="button" class="btn btn-primary" routerLink="/">
+        <i class="bi bi-house"></i>
+      </button>
+      <button class="btn btn-primary btn-lg w-100" (click)="nextMovie()">Next Movie</button>
+    </div>
   } @else {
-    <div class="alert alert-warning" role="alert">
-      <h4>Oooops</h4>
+    <div class="alert alert-warning w-100" role="alert">
+      <h3>Oooops</h3>
       <p>{{ error?.error ?? 'Unknown error occurred.' }}</p>
-      <div class="d-flex justify-content-between gap-1">
-        <button class="btn btn-primary" routerLink="/">Go back</button>
+      <div class="d-flex justify-content-start gap-2 w-100">
+        <button type="button" class="btn btn-primary" routerLink="/">
+          <i class="bi bi-house"></i>
+        </button>
         @if (error?.canRetry) {
-          <button class="btn btn-primary" (click)="loadRecommendation()">Retry</button>
+          <button class="btn btn-primary w-100" (click)="loadRecommendation()">Retry</button>
         }
       </div>
     </div>
