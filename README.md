@@ -4,8 +4,6 @@
 
 ## 🌐 [**Live Demo →**](https://popchoice-rag.netlify.app)
 
----
-
 ## 📖 About the Project
 
 PopChoice helps users find the perfect movie based on their preferences, mood, and available time. Instead of traditional search or browsing endless lists, the app guides users through an interactive poll and uses an AI agent to generate personalized recommendations.
@@ -280,7 +278,7 @@ Backend is automatically hosted on Supabase Edge Functions.
 
 ## 📝 License
 
-This project was created for educational purposes.
+Private project - Part of **AI Engineer Path** course on Scrimba
 
 ## 👨‍💻 Author
 
